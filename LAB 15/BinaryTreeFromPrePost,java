@@ -1,0 +1,74 @@
+// Definition for a binary tree node
+class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+
+    TreeNode(int x) {
+        val = x;
+    }
+}
+
+public class BinaryTreeFromPrePost {
+
+    // Function to construct binary tree from preorder and postorder traversal
+    public TreeNode constructFromPrePost(int[] preorder, int[] postorder) {
+        return buildTree(preorder, postorder, 0, preorder.length - 1, 0, postorder.length - 1);
+    }
+
+    // Helper function to recursively build the tree
+    private TreeNode buildTree(int[] preorder, int[] postorder, int preStart, int preEnd, int postStart, int postEnd) {
+        if (preStart > preEnd || postStart > postEnd) {
+            return null;
+        }
+
+        // The first element in preorder is the root
+        TreeNode root = new TreeNode(preorder[preStart]);
+
+        // Base case: If there's only one element, it's a leaf node
+        if (preStart == preEnd) {
+            return root;
+        }
+
+        // The second element in preorder is the root of the left subtree
+        int leftRootVal = preorder[preStart + 1];
+        int leftSubtreeSize = 0;
+
+        // Find the index of leftRootVal in postorder to determine the size of the left subtree
+        for (int i = postStart; i <= postEnd; i++) {
+            if (postorder[i] == leftRootVal) {
+                leftSubtreeSize = i - postStart + 1;
+                break;
+            }
+        }
+
+        // Recursively build the left and right subtrees
+        root.left = buildTree(preorder, postorder, preStart + 1, preStart + leftSubtreeSize, postStart, postStart + leftSubtreeSize - 1);
+        root.right = buildTree(preorder, postorder, preStart + leftSubtreeSize + 1, preEnd, postStart + leftSubtreeSize, postEnd - 1);
+
+        return root;
+    }
+
+    // Helper function to print inorder traversal of the tree (for verification)
+    public void inorderTraversal(TreeNode root) {
+        if (root != null) {
+            inorderTraversal(root.left);
+            System.out.print(root.val + " ");
+            inorderTraversal(root.right);
+        }
+    }
+
+    public static void main(String[] args) {
+        BinaryTreeFromPrePost treeBuilder = new BinaryTreeFromPrePost();
+
+        int[] preorder = {1, 2, 4, 5, 3, 6, 7};
+        int[] postorder = {4, 5, 2, 6, 7, 3, 1};
+
+        // Construct the binary tree
+        TreeNode root = treeBuilder.constructFromPrePost(preorder, postorder);
+
+        // Print the inorder traversal of the constructed tree
+        System.out.print("Inorder Traversal of Constructed Tree: ");
+        treeBuilder.inorderTraversal(root);
+    }
+}
